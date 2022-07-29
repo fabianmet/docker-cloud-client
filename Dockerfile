@@ -9,7 +9,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install --no-install-recommends -y curl vim apt-transport-https nano jq git groff nginx zip httpie google-cloud-sdk kubectl azure-cli && \
     rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    pip --no-cache-dir install awscli cfn-flip cfn-lint yamllint yq boto3 && \
+    pip --no-cache-dir install awscliv2 cfn-flip cfn-lint yamllint yq boto3 && \
     curl -o /usr/local/bin/gomplate -sSL https://github.com/hairyhenderson/gomplate/releases/download/v2.7.0/gomplate_linux-amd64 && \
     chmod +x /usr/local/bin/gomplate &&  \
     ln -s /usr/local/bin/yq /usr/local/bin/aws /usr/local/bin/cfn-flip /usr/local/bin/cfn-lint /usr/bin
@@ -27,6 +27,8 @@ RUN echo "source /usr/lib/google-cloud-sdk/completion.bash.inc" >> /etc/bash.bas
 RUN wget https://github.com/cdr/code-server/releases/download/2.1692-vsc1.39.2/code-server2.1692-vsc1.39.2-linux-x86_64.tar.gz -O /tmp/code-server.tar.gz --no-check-certificate && \
     tar -xzf /tmp/code-server.tar.gz --strip 1 -C /usr/bin && \
     rm /tmp/code-server.tar.gz
+
+RUN echo 'alias aws="awsv2"' >> /root/.bashrc
 
 ENV PATH=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
