@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM amazon/aws-cli:2.7.19
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y curl lsb-release gnupg apt-utils && \

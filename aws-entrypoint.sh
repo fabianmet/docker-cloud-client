@@ -17,29 +17,6 @@
 # INSTRUQT_GCP_PROJECT_%s_SERVICE_ACCOUNT_EMAIL
 # INSTRUQT_GCP_PROJECT_%s_SERVICE_ACCOUNT_KEY
 
-gcloud_init() {
-    if [ -n "${INSTRUQT_GCP_PROJECTS}" ]; then
-        PROJECTS=("${INSTRUQT_GCP_PROJECTS//,/ }")
-
-        # load all credentials into gcloud
-        for PROJECT in ${PROJECTS[@]}; do
-            TMP_FILE=$(mktemp)
-            SERVICE_ACCOUNT_KEY="INSTRUQT_GCP_PROJECT_${PROJECT}_SERVICE_ACCOUNT_KEY"
-            base64 -d <(echo ${!SERVICE_ACCOUNT_KEY}) > "$TMP_FILE"
-            gcloud auth activate-service-account --key-file="$TMP_FILE"
-            rm "$TMP_FILE"
-        done
-
-        # activate service account for first project
-        SERVICE_ACCOUNT_EMAIL="INSTRUQT_GCP_PROJECT_${PROJECTS[0]}_SERVICE_ACCOUNT_EMAIL"
-        gcloud config set account "${!SERVICE_ACCOUNT_EMAIL}"
-
-        # configure project
-        PROJECT_ID="INSTRUQT_GCP_PROJECT_${PROJECTS[0]}_PROJECT_ID"
-        gcloud config set project "${!PROJECT_ID}"
-    fi
-}
-
 aws_init() {
     if [[ -n ${INSTRUQT_AWS_ACCOUNTS} ]]; then
         PROJECTS=("${INSTRUQT_AWS_ACCOUNTS//,/ }")
@@ -60,28 +37,7 @@ aws_init() {
     fi
 }
 
-azure_init() {
-    if [[ -n $INSTRUQT_AZURE_SUBSCRIPTIONS ]]; then
-        SUBSCRIPTIONS=("${INSTRUQT_AZURE_SUBSCRIPTIONS//,/ }")
-
-        source /etc/bash_completion.d/azure-cli
-        USERNAME="INSTRUQT_AZURE_SUBSCRIPTION_${SUBSCRIPTIONS[0]}_USERNAME"
-        PASSWORD="INSTRUQT_AZURE_SUBSCRIPTION_${SUBSCRIPTIONS[0]}_PASSWORD"
-        az login --username "${!USERNAME}" --password "${!PASSWORD}"
-
-        mkdir -p "$HOME/.azure/credentials"
-        cat <<EOF > "$HOME/.azure/credentials"
-[$ARM_SUBSCRIPTION_ID]
-client_id=$ARM_CLIENT_ID
-secret=$ARM_CLIENT_SECRET
-tenant=$ARM_TENANT_ID
-EOF
-    fi
-}
-
 aws_init
-gcloud_init &
-azure_init &
 
 gomplate -f /opt/instruqt/index.html.tmpl -o /var/www/html/index.html
 nginx -g "daemon off;"
