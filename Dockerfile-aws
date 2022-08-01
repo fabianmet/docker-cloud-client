@@ -24,9 +24,12 @@ RUN wget https://github.com/99designs/aws-vault/releases/download/v6.6.0/aws-vau
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /bin/gomplate
 
+ENV AWS_VAULT_BACKEND=file
+ENV AWS_VAULT_FILE_PASSPHRASE=password
+ENV AWS_REGION=eu-central-1
+
 ENTRYPOINT [ "/opt/instruqt/aws-entrypoint.sh" ]
 COPY aws-entrypoint.sh /opt/instruqt/
 
 COPY assets/  /var/www/html/assets/
 COPY index.html.tmpl /opt/instruqt/
-COPY aws/aws-vault-env.sh /etc/profile.d/

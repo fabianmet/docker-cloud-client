@@ -38,6 +38,7 @@ aws_init() {
 }
 
 aws_init
+aws-vault add default --env
 
 gomplate -f /opt/instruqt/index.html.tmpl -o /var/www/html/index.html
 nginx -g "daemon off;"
