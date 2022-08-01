@@ -9,13 +9,18 @@ RUN apt-get update && apt-get install -y \
     nano \
     wget \
     jq \
-    nginx
+    nginx\
+    groff
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     rm awscliv2.zip && \
     ./aws/install && \
     rm -rf ./aws
+
+RUN wget https://github.com/99designs/aws-vault/releases/download/v6.6.0/aws-vault-linux-amd64 && \
+    chmod +x aws-vault-linux-amd64 && \
+    mv aws-vault-linux-amd64 /usr/bin/aws-vault
 
 COPY --from=hairyhenderson/gomplate:stable /gomplate /bin/gomplate
 
@@ -24,3 +29,4 @@ COPY aws-entrypoint.sh /opt/instruqt/
 
 COPY assets/  /var/www/html/assets/
 COPY index.html.tmpl /opt/instruqt/
+COPY aws/aws-vault-env.sh /etc/profile.d/
